@@ -10,15 +10,9 @@ every fix.
 
 ---
 
-## Headline
+## The Result
 
-| Line item     | Before    | After                    |
-|---------------|-----------|--------------------------|
-| NAT gateway   | ~$33/mo   | $0 (free gateway endpoints) |
-| Idle EIPs (2) | ~$7.30/mo | $0 (released)            |
-| Orphaned EBS  | ~$10/mo   | $0 (deleted)             |
-| RDS storage   | gp2       | gp3 (~20% cheaper)       |
-| **Billable waste** | **~$52/mo** | **~$1.60/mo**     |
+![Savings Overview](docs/screenshots/01-savings.png)
 
 **~$50/mo (~$600/yr) of eliminable waste removed with zero performance impact.**
 
@@ -29,16 +23,11 @@ every fix.
 > that inflates its numbers doesn't survive a CTO's second look, so the numbers here
 > are stated plainly.
 
-## What's in this repo
+---
 
-| Path | What it is |
-|------|------------|
-| `baseline/` | Terraform for the deliberately wasteful environment (the "before") |
-| `optimized/` | The same environment, fixed (the "after") |
-| `audit/findings.md` | The methodology and all seven findings with savings math |
-| `docs/` | Measured usage evidence (Cost Explorer API) + optimized-state boot logs |
+## The Audit — Seven Findings
 
-## The audit, in seven findings
+![Seven Findings](docs/screenshots/02-findings.png)
 
 1. **F1 — NAT gateway (hero):** the workload's egress is S3/DynamoDB-bound, and
    Amazon Linux 2023's package repos are S3-hosted — so even OS updates don't need
@@ -50,10 +39,57 @@ every fix.
 5. **F5 — Logs never expire:** CloudWatch retention set to 30 days.
 6. **F6 — No tagging governance:** full tag set enforced via provider `default_tags`;
    AWS Config required-tags rule recommended for ongoing enforcement.
-7. **F7 — Always-on compute (modeled):** an off-hours scheduler (EventBridge + Lambda)
-   running a fleet 60h/wk instead of 168h/wk is a ~64% compute cut — documented with
-   the math rather than built, since the free-tier demo instances make its dollar
-   impact zero here.
+7. **F7 — Always-on compute (modeled):** an off-hours scheduler running a fleet
+   60h/wk instead of 168h/wk is a ~64% compute cut — documented with the math
+   rather than built, since the free-tier demo instances make its dollar impact zero here.
+
+---
+
+## Evidence — Measured, Not Assumed
+
+![Evidence](docs/screenshots/03-evidence.png)
+
+The account is an AWS Free Plan account, so actual billing is **$0**. The savings
+above are AWS published on-demand pricing applied to **measured usage** — these
+are the real numbers the environment generated.
+
+### Measured Usage (Cost Explorer API, baseline ~24h)
+
+| Usage Type | Measured | Unit | On-Demand Rate | Projected Monthly |
+|---|---:|---|---:|---:|
+| NatGateway-Hours | 15.00 | Hrs | $0.045/hr | **$33.00** |
+| NatGateway-Bytes | 0.15 | GB | $0.045/GB | varies |
+| PublicIPv4 IdleAddress | 29.83 | addr-hrs | $0.005/hr | **$7.30** |
+| EBS:VolumeUsage.gp2 | 1.94 | GB-mo | $0.10/GB-mo | **$10.00** |
+| BoxUsage:t3.micro | 28.87 | Hrs | free-tier | $0 |
+| InstanceUsage:db.t3.micro | 14.83 | Hrs | free-tier | $0 |
+
+### Raw Cost Explorer Evidence
+
+<details>
+<summary>Click to expand — Cost Explorer API JSON excerpts</summary>
+
+| | |
+|---|---|
+| ![NatGateway-Hours](docs/screenshots/json1.png) | ![NatGateway-Bytes](docs/screenshots/json2.png) |
+| ![EBS VolumeUsage gp2](docs/screenshots/json3.png) | ![BoxUsage t3.micro](docs/screenshots/json4.png) |
+
+Full JSON: [`docs/before-usage-and-cost.json`](docs/before-usage-and-cost.json)
+
+</details>
+
+---
+
+## What's in This Repo
+
+| Path | What it is |
+|---|---|
+| `baseline/` | Terraform for the deliberately wasteful environment (the "before") |
+| `optimized/` | The same environment, fixed (the "after") |
+| `audit/findings.md` | The methodology and all seven findings with savings math |
+| `docs/case-study.html` | Print-ready case study (open in browser → Print → Save as PDF) |
+| `docs/AWS-Cost-Audit-Checklist.md` | Reusable 28-point audit checklist |
+| `docs/` | Measured usage evidence, boot logs, and screenshots |
 
 ## Methodology
 
@@ -62,7 +98,7 @@ breakdown, anti-pattern hunt) → **recommendations grouped by effort and risk**
 (quick wins → medium → strategic) → **implementation as a Terraform diff** with a
 measured before/after.
 
-## Reproduce it
+## Reproduce It
 
 ```bash
 cd baseline   # or optimized
@@ -76,13 +112,14 @@ terraform apply
 > afterthought. The baseline and optimized states reuse the same resource names, so
 > only one can be live at a time.
 
-## A note on honesty
+## A Note on Honesty
 
-This is a simulated environment, not a real client. The methodology, the Terraform,
-the measured usage data, and the optimized boot logs are genuine. Billing ran $0 on an AWS Free Plan account, so savings are AWS published pricing applied to measured usage. The "client" is a stand-in for a
-typical small-SaaS workload. Said plainly because trustworthy cost work starts with
-not overstating the result.
+This is a simulated environment, not a real client. The method, the Terraform,
+the measured usage data, and the optimized boot logs are genuine. Billing ran $0
+on an AWS Free Plan account, so savings are AWS published pricing applied to
+measured usage. The "client" is a stand-in for a typical small-SaaS workload.
+Said plainly because trustworthy cost work starts with not overstating the result.
 
 ---
 
-**Kamal Hussain** — Cloud/DevOps Engineer
+**Kamal Hussain** — Cloud/DevOps Engineer · [Want this run on your AWS account?](https://github.com/kamalhussaindevops)
