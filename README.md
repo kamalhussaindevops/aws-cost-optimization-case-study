@@ -66,8 +66,8 @@ are the real numbers the environment generated.
 
 ### Raw Cost Explorer Evidence
 
-<details>
-<summary>Click to expand — Cost Explorer API JSON excerpts</summary>
+
+
 
 | | |
 |---|---|
@@ -76,7 +76,7 @@ are the real numbers the environment generated.
 
 Full JSON: [`docs/before-usage-and-cost.json`](docs/before-usage-and-cost.json)
 
-</details>
+
 
 ---
 
