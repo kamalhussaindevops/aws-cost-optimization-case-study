@@ -67,3 +67,13 @@ HONEST CALIBRATION: this environment was deliberately waste-heavy and its comput
 is free-tier, so the % reduction is very high (~97% of eliminable spend). On real
 production accounts, where compute dominates and is not free, this same audit
 methodology typically yields 25-45% total-bill reduction.
+
+## Evidence (measured, this account)
+- Account type: AWS Free Plan -> actual billing $0. Savings are AWS published
+  on-demand pricing applied to MEASURED usage, not a hypothetical.
+- Before (baseline, ~24h): NatGateway-Hours 15, NatGateway-Bytes 0.15GB,
+  PublicIPv4 IdleAddress 29.8 addr-hrs (2 idle EIPs), EBS gp2 1.94 GB-mo, RDS +
+  EC2 live. Raw: docs/before-usage-and-cost.json
+- After (optimized): NAT/EIP/EBS resources do not exist. Instances boot and install
+  nginx from S3-hosted AL2023 repos via the S3 gateway endpoint, no NAT in path.
+  Proof: docs/after-boot-log.txt ("nginx ... Complete!", cloud-init finished).

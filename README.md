@@ -36,7 +36,7 @@ every fix.
 | `baseline/` | Terraform for the deliberately wasteful environment (the "before") |
 | `optimized/` | The same environment, fixed (the "after") |
 | `audit/findings.md` | The methodology and all seven findings with savings math |
-| `docs/` | Architecture and before/after Cost Explorer screenshots |
+| `docs/` | Measured usage evidence (Cost Explorer API) + optimized-state boot logs |
 
 ## The audit, in seven findings
 
@@ -79,7 +79,7 @@ terraform apply
 ## A note on honesty
 
 This is a simulated environment, not a real client. The methodology, the Terraform,
-and the Cost Explorer screenshots are genuine; the "client" is a stand-in for a
+the measured usage data, and the optimized boot logs are genuine. Billing ran $0 on an AWS Free Plan account, so savings are AWS published pricing applied to measured usage. The "client" is a stand-in for a
 typical small-SaaS workload. Said plainly because trustworthy cost work starts with
 not overstating the result.
 
